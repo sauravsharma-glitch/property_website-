@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Luxury Estates | Premium Real Estate Investments</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Discover luxury villas, penthouses, and premium apartments. India's most trusted real estate partner for high-net-worth individuals.">
+  <meta name="keywords" content="luxury real estate, premium properties, villas, penthouses, real estate investment">
+  <meta name="author" content="Luxury Estates">
+  <!-- Google Fonts + Tailwind + Font Awesome + GSAP + Swiper -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <!-- Leaflet for Maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    html { scroll-behavior: smooth; }
+    body { background-color: #fefcf7; }
+    .gold-text { color: #C9A03D; }
+    .gold-border { border-color: #C9A03D; }
+    .gold-bg { background-color: #C9A03D; }
+    .dark-bg { background-color: #0A2A2A; }
+    .luxury-card { transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1); }
+    .luxury-card:hover { transform: translateY(-8px); box-shadow: 0 25px 35px -12px rgba(0,0,0,0.2); }
+    .hero-overlay { background: linear-gradient(135deg, rgba(10,42,42,0.7) 0%, rgba(0,0,0,0.5) 100%); }
+    .filter-btn.active { background-color: #C9A03D; color: white; border-color: #C9A03D; }
+    .testimonial-card { background: white; border-radius: 1.5rem; transition: all 0.3s; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.08); }
+    .testimonial-card:hover { transform: translateY(-5px); box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15); }
+    .gallery-img { transition: transform 0.5s ease, opacity 0.4s; cursor: pointer; border-radius: 1rem; }
+    .gallery-img:hover { transform: scale(1.03); box-shadow: 0 20px 30px -10px rgba(0,0,0,0.2); }
+    .whatsapp-float { position: fixed; bottom: 30px; right: 30px; background: #25D366; color: white; border-radius: 50px; padding: 12px 22px; font-weight: 600; box-shadow: 0 8px 20px rgba(0,0,0,0.2); z-index: 100; display: flex; align-items: center; gap: 10px; text-decoration: none; transition: 0.2s; }
+    .call-float { position: fixed; bottom: 30px; left: 30px; background: #1E2F2F; color: white; border-radius: 50px; padding: 12px 22px; font-weight: 600; box-shadow: 0 8px 20px rgba(0,0,0,0.2); z-index: 100; display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-link::after { content: ''; display: block; width: 0; height: 2px; background: #C9A03D; transition: width 0.3s; }
+    .nav-link:hover::after { width: 100%; }
+    .swiper-pagination-bullet-active { background: #C9A03D !important; }
+    .swiper-button-next, .swiper-button-prev { color: #C9A03D !important; background: rgba(255,255,255,0.9); width: 40px; height: 40px; border-radius: 50%; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .swiper-button-next:after, .swiper-button-prev:after { font-size: 18px; font-weight: bold; }
+    @media (max-width: 640px) { .whatsapp-float, .call-float { padding: 8px 16px; font-size: 0.8rem; } }
+    /* Lightbox styles */
+    .lightbox { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 1000; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(5px); }
+    .lightbox.active { display: flex; }
+    .lightbox img { max-width: 90%; max-height: 90%; border-radius: 12px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); border: 2px solid rgba(201,160,61,0.3); }
+    .lightbox .close-btn { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; cursor: pointer; transition: 0.2s; z-index: 1001; }
+    .lightbox .close-btn:hover { color: #C9A03D; transform: scale(1.1); }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- Floating Buttons -->
+  <a href="https://wa.me/919876543210" target="_blank" class="whatsapp-float"><i class="fab fa-whatsapp text-xl"></i> WhatsApp</a>
+  <a href="tel:+919876543210" class="call-float"><i class="fas fa-phone-alt text-xl"></i> Call Now</a>
+
+  <!-- Navbar -->
+  <nav class="bg-white/95 backdrop-blur-sm shadow-sm sticky top-0 z-50 transition-all">
+    <div class="container mx-auto px-5 lg:px-12 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-2">
+        <i class="fas fa-building text-3xl gold-text"></i>
+        <span class="text-2xl font-extrabold tracking-tight text-gray-800">LUXURY<span class="gold-text">ESTATES</span></span>
+      </div>
+      <div class="hidden md:flex space-x-8 text-gray-700 font-medium">
+        <a href="#home" class="nav-link">Home</a>
+        <a href="#properties" class="nav-link">Properties</a>
+        <a href="#featuredSlider" class="nav-link">Projects</a>
+        <a href="#about" class="nav-link">About</a>
+        <a href="#testimonials" class="nav-link">Testimonials</a>
+        <a href="#gallery" class="nav-link">Gallery</a>
+        <a href="#contact" class="nav-link">Contact</a>
+      </div>
+      <div class="md:hidden">
+        <button id="mobileMenuBtn" class="text-2xl text-gray-700"><i class="fas fa-bars"></i></button>
+      </div>
+    </div>
+    <div id="mobileMenu" class="md:hidden hidden bg-white border-t px-5 py-4 flex flex-col gap-3 shadow-lg">
+      <a href="#home" class="py-2 hover:gold-text transition">Home</a>
+      <a href="#properties" class="py-2 hover:gold-text transition">Properties</a>
+      <a href="#featuredSlider" class="py-2 hover:gold-text transition">Projects</a>
+      <a href="#about" class="py-2 hover:gold-text transition">About</a>
+      <a href="#testimonials" class="py-2 hover:gold-text transition">Testimonials</a>
+      <a href="#gallery" class="py-2 hover:gold-text transition">Gallery</a>
+      <a href="#contact" class="py-2 hover:gold-text transition">Contact</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section with Video Background -->
+  <section id="home" class="relative h-screen max-h-[800px] overflow-hidden">
+    <div class="absolute inset-0">
+      <video class="w-full h-full object-cover" autoplay loop muted playsinline poster="https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg">
+        <source src="https://videos.pexels.com/video-files/3195394/3195394-uhd_2560_1440_30fps.mp4" type="video/mp4">
+      </video>
+      <div class="hero-overlay absolute inset-0"></div>
+    </div>
+    <div class="relative z-10 flex flex-col justify-center items-start h-full max-w-7xl mx-auto px-6 lg:px-12 text-white">
+      <span class="gold-text text-lg tracking-wider font-semibold animate-pulse">WELCOME TO PRESTIGE LIVING</span>
+      <h1 class="text-5xl md:text-7xl font-bold leading-tight mt-3">Where Dreams<br>Find A Home</h1>
+      <p class="text-lg md:text-xl max-w-xl mt-4 text-gray-100">Luxury villas, penthouses & premium apartments crafted for connoisseurs.</p>
+      <div class="mt-8 flex gap-4">
+        <a href="#properties" class="bg-gold-bg text-black px-8 py-3 rounded-full font-semibold shadow-lg hover:bg-amber-600 transition transform hover:scale-105">Explore Properties <i class="fas fa-arrow-right ml-2"></i></a>
+        <a href="#contact" class="border border-white/70 px-8 py-3 rounded-full font-semibold hover:bg-white hover:text-black transition">Contact Advisor</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Property Listings with Filters -->
+  <section id="properties" class="py-20 bg-gray-50">
+    <div class="container mx-auto px-5 lg:px-12">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="gold-text font-semibold uppercase tracking-wide">Exclusive Listings</span>
+        <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mt-2">Premium Properties</h2>
+        <div class="w-20 h-1 gold-bg mx-auto mt-4"></div>
+      </div>
+      <div class="flex flex-wrap justify-center gap-3 mb-12">
+        <button class="filter-btn active px-5 py-2 rounded-full border border-gray-300 bg-white font-medium transition" data-filter="all">All</button>
+        <button class="filter-btn px-5 py-2 rounded-full border border-gray-300 bg-white font-medium transition" data-filter="villa">Villas</button>
+        <button class="filter-btn px-5 py-2 rounded-full border border-gray-300 bg-white font-medium transition" data-filter="apartment">Apartments</button>
+        <button class="filter-btn px-5 py-2 rounded-full border border-gray-300 bg-white font-medium transition" data-filter="penthouse">Penthouses</button>
+      </div>
+      <div id="propertyGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+    </div>
+  </section>
+
+  <!-- FEATURED PROJECTS - AUTO SLIDER SECTION -->
+  <section id="featuredSlider" class="py-20 bg-white">
+    <div class="container mx-auto px-5 lg:px-12">
+      <div class="text-center mb-12">
+        <span class="gold-text font-semibold uppercase">Signature Developments</span>
+        <h2 class="text-4xl font-bold text-gray-800">Featured Projects <span class="gold-text">Auto Slider</span></h2>
+        <div class="w-20 h-1 gold-bg mx-auto mt-4"></div>
+      </div>
+      <div class="swiper projectSwiper rounded-2xl overflow-hidden shadow-2xl">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide"><div class="relative"><img src="https://images.pexels.com/photos/2587054/pexels-photo-2587054.jpeg?auto=compress&cs=tinysrgb&w=1200" class="w-full h-[500px] object-cover"><div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-8"><h3 class="text-white text-3xl font-bold">The Royal Heights</h3><p class="text-gold-300 text-lg">Gurgaon | Luxury Penthouses | Starting ₹7.5Cr</p><button onclick="openInquiry('Royal Heights')" class="mt-3 gold-bg text-black px-6 py-2 rounded-full font-semibold hover:bg-amber-600 transition">Enquire Now</button></div></div></div>
+          <div class="swiper-slide"><div class="relative"><img src="https://images.pexels.com/photos/280229/pexels-photo-280229.jpeg?auto=compress&cs=tinysrgb&w=1200" class="w-full h-[500px] object-cover"><div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-8"><h3 class="text-white text-3xl font-bold">Emerald Isles</h3><p class="text-gold-300 text-lg">Mumbai | Waterfront Villas | Starting ₹12Cr</p><button onclick="openInquiry('Emerald Isles')" class="mt-3 gold-bg text-black px-6 py-2 rounded-full font-semibold">Enquire Now</button></div></div></div>
+          <div class="swiper-slide"><div class="relative"><img src="https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1200" class="w-full h-[500px] object-cover"><div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-8"><h3 class="text-white text-3xl font-bold">Azure Terraces</h3><p class="text-gold-300 text-lg">Bangalore | Sky Gardens | Ready to move</p><button onclick="openInquiry('Azure Terraces')" class="mt-3 gold-bg text-black px-6 py-2 rounded-full font-semibold">Enquire Now</button></div></div></div>
+          <div class="swiper-slide"><div class="relative"><img src="https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1200" class="w-full h-[500px] object-cover"><div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-8"><h3 class="text-white text-3xl font-bold">Golden Sands Estate</h3><p class="text-gold-300 text-lg">Goa | Beachfront Residences</p><button onclick="openInquiry('Golden Sands')" class="mt-3 gold-bg text-black px-6 py-2 rounded-full font-semibold">Enquire Now</button></div></div></div>
+        </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- Lightbox Modal -->
+  <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <span class="close-btn" onclick="closeLightbox()">&times;</span>
+    <img id="lightboxImg" src="" onclick="event.stopPropagation()">
+  </div>
+
+  <!-- Contact + Google Maps -->
+  <section id="contact" class="py-20 bg-white">
+    <div class="container mx-auto px-5 lg:px-12 grid md:grid-cols-2 gap-10">
+      <div>
+        <span class="gold-text font-semibold uppercase">Get In Touch</span>
+        <h2 class="text-4xl font-bold text-gray-800 mt-2">Schedule a Private Tour</h2>
+        <form id="inquiryForm" class="mt-8 space-y-5">
+          <input type="text" placeholder="Full Name" required class="w-full border border-gray-300 rounded-xl p-3 focus:border-gold-bg outline-none focus:ring-2 focus:ring-gold-bg/30">
+          <input type="email" placeholder="Email Address" required class="w-full border border-gray-300 rounded-xl p-3 focus:border-gold-bg outline-none">
+          <input type="tel" placeholder="Phone Number" required class="w-full border border-gray-300 rounded-xl p-3 focus:border-gold-bg outline-none">
+          <select class="w-full border border-gray-300 rounded-xl p-3 bg-white">
+            <option>Interested in Villa</option>
+            <option>Luxury Apartment</option>
+            <option>Penthouse</option>
+            <option>Commercial</option>
+          </select>
+          <textarea rows="3" placeholder="Message" class="w-full border border-gray-300 rounded-xl p-3"></textarea>
+          <button type="submit" class="gold-bg w-full py-3 rounded-xl font-bold text-black hover:bg-amber-700 transition transform hover:scale-[1.02]">Submit Inquiry <i class="fas fa-paper-plane ml-2"></i></button>
+          <p id="formMsg" class="text-green-600 text-center hidden">✔ Request sent! Our expert will call you soon.</p>
+        </form>
+        <div class="flex gap-5 mt-6 text-2xl gold-text justify-center md:justify-start">
+          <a href="#" class="hover:scale-110 transition"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="hover:scale-110 transition"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="hover:scale-110 transition"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#" class="hover:scale-110 transition"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+      <div>
+        <div id="map" class="h-80 md:h-96 rounded-2xl shadow-xl w-full"></div>
+        <div class="mt-4 bg-gray-100 p-4 rounded-xl flex gap-4"><i class="fas fa-map-pin gold-text text-2xl"></i><div><p class="font-bold">Luxury Estates Tower, Cyber City</p><p>Gurugram, 122002, India</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="dark-bg text-white py-12">
+    <div class="container mx-auto px-5 lg:px-12 grid md:grid-cols-4 gap-8">
+      <div><i class="fas fa-building text-2xl gold-text"></i><p class="mt-3 text-sm">Luxury Estates — Redefining real estate with integrity & elegance.</p></div>
+      <div><h4 class="font-bold text-lg gold-text">Quick Links</h4><ul class="mt-3 space-y-2"><li><a href="#properties" class="hover:gold-text transition">Properties</a></li><li><a href="#featuredSlider" class="hover:gold-text transition">Projects</a></li><li><a href="#contact" class="hover:gold-text transition">Careers</a></li></ul></div>
+      <div><h4 class="font-bold text-lg gold-text">Support</h4><ul class="space-y-2"><li><i class="fas fa-phone mr-2"></i>+91 98765 43210</li><li><i class="fas fa-envelope mr-2"></i>hello@luxuryestates.com</li></ul></div>
+      <div><h4 class="font-bold text-lg gold-text">Newsletter</h4><div class="flex mt-2"><input type="email" placeholder="Your Email" class="p-2 rounded-l w-full text-black"><button class="gold-bg text-black px-4 rounded-r hover:bg-amber-600 transition">→</button></div></div>
+    </div>
+    <div class="border-t border-white/20 mt-10 pt-6 text-center text-sm">© 2025 Luxury Estates — All rights reserved. | RERA registered | <span class="gold-text">Invest with Confidence</span></div>
+  </footer>
+
+  <script>
+    // Property data
+    const properties = [
+      { id: 1, name: "Sunset Villa Goa", type: "villa", price: "₹4.2 Cr", location: "Goa, India", img: "https://images.pexels.com/photos/2587054/pexels-photo-2587054.jpeg?auto=compress&cs=tinysrgb&w=600", beds: 4, baths: 5 },
+      { id: 2, name: "The Pinnacle Penthouse", type: "penthouse", price: "₹8.7 Cr", location: "Mumbai, Worli", img: "https://images.pexels.com/photos/280229/pexels-photo-280229.jpeg?auto=compress&cs=tinysrgb&w=600", beds: 3, baths: 4 },
+      { id: 3, name: "Lakeview Residency", type: "apartment", price: "₹1.95 Cr", location: "Bangalore", img: "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=600", beds: 3, baths: 2 },
+      { id: 4, name: "Golden Palms Villa", type: "villa", price: "₹6.5 Cr", location: "Hyderabad", img: "https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=600", beds: 5, baths: 6 },
+      { id: 5, name: "Sky Garden Apartments", type: "apartment", price: "₹2.8 Cr", location: "Pune", img: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=600", beds: 2, baths: 2 },
+      { id: 6, name: "Ocean Crest Penthouse", type: "penthouse", price: "₹10.2 Cr", location: "Chennai", img: "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=600", beds: 4, baths: 4 }
+    ];
+    
+    function renderProperties(filter = "all") {
+      const filtered = filter === "all" ? properties : properties.filter(p => p.type === filter);
+      const grid = document.getElementById("propertyGrid");
+      if(!grid) return;
+      grid.innerHTML = filtered.map(prop => `
+        <div class="bg-white rounded-2xl overflow-hidden shadow-md luxury-card transition-all">
+          <img src="${prop.img}" class="h-56 w-full object-cover" alt="${prop.name}">
+          <div class="p-5">
+            <div class="flex justify-between"><h3 class="text-xl font-bold">${prop.name}</h3><span class="gold-text font-bold">${prop.price}</span></div>
+            <p class="text-gray-500 mt-1"><i class="fas fa-map-marker-alt gold-text mr-1"></i> ${prop.location}</p>
+            <div class="flex gap-3 mt-3 text-gray-600 text-sm"><span><i class="fas fa-bed"></i> ${prop.beds} beds</span><span><i class="fas fa-bath"></i> ${prop.baths} baths</span></div>
+            <div class="mt-4 flex justify-between items-center"><button onclick="openInquiry('${prop.name}')" class="gold-text border border-gold-bg px-4 py-1 rounded-full text-sm font-semibold hover:bg-gold-bg hover:text-white transition">Enquire Now</button><i class="fas fa-heart text-gray-400 hover:text-red-500 cursor-pointer transition"></i></div>
+          </div>
+        </div>
+      `).join("");
+    }
+    
+    window.openInquiry = (name) => {
+      document.getElementById("contact").scrollIntoView({ behavior: "smooth" });
+      const phoneField = document.querySelector("#contact input[type='tel']");
+      if(phoneField) phoneField.value = `Interested in ${name}`;
+      alert(`✨ Inquiry for ${name} received. Our expert will contact you shortly.`);
+    };
+    
+    // Filter buttons
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+      btn.addEventListener("click", function() {
+        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active", "gold-bg", "text-white"));
+        this.classList.add("active", "gold-bg", "text-white");
+        renderProperties(this.getAttribute("data-filter"));
+      });
+    });
+    renderProperties("all");
+    
+    // Initialize Swipers (FULLY FUNCTIONAL AUTO SLIDERS)
+    const projectSwiper = new Swiper('.projectSwiper', {
+      loop: true,
+      autoplay: { delay: 4000, disableOnInteraction: false },
+      pagination: { el: '.swiper-pagination', clickable: true },
+      navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+      effect: 'slide',
+      speed: 800
+    });
+    
+    const testimonialSwiper = new Swiper('.testimonialSwiper', {
+      loop: true,
+      autoplay: { delay: 5000, disableOnInteraction: false },
+      pagination: { el: '.testimonial-pagination', clickable: true, dynamicBullets: true },
+      slidesPerView: 1,
+      spaceBetween: 30,
+      breakpoints: { 
+        768: { slidesPerView: 2, spaceBetween: 25 },
+        1024: { slidesPerView: 3, spaceBetween: 30 }
+      }
+    });
+    
+    // GSAP Scroll Animations
+    gsap.registerPlugin(ScrollTrigger);
+    gsap.utils.toArray(".luxury-card, .testimonial-card, .gallery-img, .bg-white.p-4, .relative.overflow-hidden.rounded-2xl").forEach(el => {
+      gsap.from(el, { opacity: 0, y: 40, duration: 0.7, stagger: 0.1, scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none reverse" } });
+    });
+    
+    // Google Maps with Leaflet
+    const map = L.map('map').setView([28.4595, 77.0266], 13);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>' }).addTo(map);
+    L.marker([28.4595, 77.0266]).addTo(map).bindPopup('<b>Luxury Estates</b><br>Cyber City, Gurgaon').openPopup();
+    
+    // Inquiry form
+    document.getElementById("inquiryForm")?.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const msgDiv = document.getElementById("formMsg");
+      msgDiv.classList.remove("hidden");
+      setTimeout(() => msgDiv.classList.add("hidden"), 4000);
+      this.reset();
+    });
+    
+    // Mobile menu
+    document.getElementById("mobileMenuBtn")?.addEventListener("click", () => {
+      document.getElementById("mobileMenu").classList.toggle("hidden");
+    });
+    
+    // Lightbox functions - FULLY WORKING
+    window.openLightbox = (src) => {
+      const lb = document.getElementById("lightbox");
+      const img = document.getElementById("lightboxImg");
+      img.src = src;
+      lb.classList.add("active");
+      document.body.style.overflow = "hidden";
+    };
+    window.closeLightbox = () => {
+      const lb = document.getElementById("lightbox");
+      lb.classList.remove("active");
+      document.body.style.overflow = "";
+    };
+    document.addEventListener("keydown", (e) => { if(e.key === "Escape") closeLightbox(); });
+  </script>
+</body>
+</html>
